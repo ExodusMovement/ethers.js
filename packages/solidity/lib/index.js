@@ -4,11 +4,56 @@ var bignumber_1 = require("@ethersproject/bignumber");
 var bytes_1 = require("@ethersproject/bytes");
 var keccak256_1 = require("@ethersproject/keccak256");
 var sha2_1 = require("@ethersproject/sha2");
-var strings_1 = require("@ethersproject/strings");
 var regexBytes = new RegExp("^bytes([0-9]+)$");
 var regexNumber = new RegExp("^(u?int)([0-9]*)$");
 var regexArray = new RegExp("^(.*)\\[([0-9]*)\\]$");
 var Zeros = "0000000000000000000000000000000000000000000000000000000000000000";
+var UnicodeNormalizationForm;
+(function (UnicodeNormalizationForm) {
+    UnicodeNormalizationForm["current"] = "";
+    UnicodeNormalizationForm["NFC"] = "NFC";
+    UnicodeNormalizationForm["NFD"] = "NFD";
+    UnicodeNormalizationForm["NFKC"] = "NFKC";
+    UnicodeNormalizationForm["NFKD"] = "NFKD";
+})(UnicodeNormalizationForm || (UnicodeNormalizationForm = {}));
+;
+function toUtf8Bytes(str, form) {
+    if (form === void 0) { form = UnicodeNormalizationForm.current; }
+    if (form != UnicodeNormalizationForm.current) {
+        throw new Error('Normalization is not supported');
+    }
+    var result = [];
+    for (var i = 0; i < str.length; i++) {
+        var c = str.charCodeAt(i);
+        if (c < 0x80) {
+            result.push(c);
+        }
+        else if (c < 0x800) {
+            result.push((c >> 6) | 0xc0);
+            result.push((c & 0x3f) | 0x80);
+        }
+        else if ((c & 0xfc00) == 0xd800) {
+            i++;
+            var c2 = str.charCodeAt(i);
+            if (i >= str.length || (c2 & 0xfc00) !== 0xdc00) {
+                throw new Error("invalid utf-8 string");
+            }
+            // Surrogate Pair
+            var pair = 0x10000 + ((c & 0x03ff) << 10) + (c2 & 0x03ff);
+            result.push((pair >> 18) | 0xf0);
+            result.push(((pair >> 12) & 0x3f) | 0x80);
+            result.push(((pair >> 6) & 0x3f) | 0x80);
+            result.push((pair & 0x3f) | 0x80);
+        }
+        else {
+            result.push((c >> 12) | 0xe0);
+            result.push(((c >> 6) & 0x3f) | 0x80);
+            result.push((c & 0x3f) | 0x80);
+        }
+    }
+    return bytes_1.arrayify(result);
+}
+;
 function _pack(type, value, isArray) {
     switch (type) {
         case "address":
@@ -17,7 +62,7 @@ function _pack(type, value, isArray) {
             }
             return bytes_1.arrayify(value);
         case "string":
-            return strings_1.toUtf8Bytes(value);
+            return toUtf8Bytes(value);
         case "bytes":
             return bytes_1.arrayify(value);
         case "bool":

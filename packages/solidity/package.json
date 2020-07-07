@@ -4,8 +4,7 @@
     "@ethersproject/bignumber": "^5.0.0",
     "@ethersproject/bytes": "^5.0.0",
     "@ethersproject/keccak256": "^5.0.0",
-    "@ethersproject/sha2": "^5.0.0",
-    "@ethersproject/strings": "^5.0.0"
+    "@ethersproject/sha2": "^5.0.0"
   },
   "description": "Solidity coder for non-standard (tight) packing.",
   "ethereum": "donations.ethers.eth",
