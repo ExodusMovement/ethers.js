@@ -15,7 +15,7 @@
   "license": "MIT",
   "main": "./lib/index.js",
   "module": "./lib.esm/index.js",
-  "name": "@ethersproject/solidity",
+  "name": "@exodus/ethersproject-solidity",
   "publishConfig": {
     "access": "public"
   },
@@ -28,5 +28,5 @@
   },
   "tarballHash": "0x670073e9170653a1132e7890bd927e938b053d13f8be01f1a14c2256ad1e5712",
   "types": "./lib/index.d.ts",
-  "version": "5.0.1"
+  "version": "5.0.1-exodus0"
 }
